@@ -1,0 +1,19 @@
+- name: Create GCP project
+  google.cloud.gcp_projects:
+    name: "{{ project_name }}"
+    project_id: "{{ project_id }}"
+    state: present
+
+- name: Link billing account
+  google.cloud.gcp_billing_account_project:
+    billing_account: "{{ billing_account_id }}"
+    project_id: "{{ project_id }}"
+
+- name: Enable required APIs
+  google.cloud.gcp_service:
+    project: "{{ project_id }}"
+    state: enabled
+    services:
+      - compute.googleapis.com
+      - iam.googleapis.com
+      - iap.googleapis.com

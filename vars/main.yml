@@ -1,0 +1,24 @@
+---
+# vars file for aap-iap
+project_id: "PROJECT_ID"
+project_name: "PROJECT_NAME"
+billing_account_id: "BILLING_ACCOUNT_ID"
+
+zone: "us-east1-d"
+region: "us-east1"
+vm_name: "rhel8-vm"
+machine_type: "n1-standard-1"
+disk_size: "50"
+network: "default"
+subnet: "default"
+image_project: "rhel-cloud"
+image_family: "rhel-8"
+network_tags: "iap-access"
+
+iap_firewall_rule_name: "allow-iap-ssh"
+iap_source_range: "IPS_FOR_IAP"
+target_tag: "iap-access"
+service_account_name: "iap-tunnel-sa"
+service_account_email: "iap-tunnel-sa@PROJECT_ID.iam.gserviceaccount.com"
+
+ssh_user: "YOUR_SSH_USERNAME"

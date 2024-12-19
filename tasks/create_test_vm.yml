@@ -1,0 +1,27 @@
+- name: Create a RHEL 8 VM
+  google.cloud.gcp_compute_instance:
+    name: "{{ vm_name }}"
+    project: "{{ project_id }}"
+    zone: "{{ zone }}"
+    machine_type: "{{ machine_type }}"
+    tags: ["{{ network_tags }}"]
+    disks:
+      - auto_delete: true
+        boot: true
+        initialize_params:
+          disk_size_gb: "{{ disk_size }}"
+          source_image_family: "{{ image_family }}"
+          source_image_project: "{{ image_project }}"
+          disk_type: "pd-balanced"
+    network_interfaces:
+      - network: "{{ network }}"
+        subnetwork: "{{ subnet }}"
+        access_configs: []  
+
+- name: Enable OS Login for IAP tunneling
+  google.cloud.gcp_compute_instance:
+    name: "{{ vm_name }}"
+    project: "{{ project_id }}"
+    zone: "{{ zone }}"
+    metadata:
+      enable-oslogin: "TRUE"

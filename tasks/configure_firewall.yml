@@ -1,0 +1,10 @@
+- name: Create a firewall rule for IAP SSH traffic
+  google.cloud.gcp_compute_firewall:
+    name: "{{ iap_firewall_rule_name }}"
+    project: "{{ project_id }}"
+    allowed:
+      - ip_protocol: tcp
+        ports: ["22"]
+    source_ranges: ["{{ iap_source_range }}"]
+    target_tags: ["{{ target_tag }}"]
+    state: present
