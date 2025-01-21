@@ -1,30 +1,44 @@
 ---
+
 version: 3
+
 images:
   base_image:
-    name: registry.redhat.io/ansible-automation-platform-23/ee-minimal-rhel8:latest
-
-options:
-  package_manager_path: /usr/bin/microdnf
-  
-additional_build_files:
-  - src: /etc/yum.repos.d/google-cloud-sdk.repo
-    dest: configs
-    
-additional_build_steps:
-  prepend_base:
-    - COPY _build/configs/google-cloud-sdk.repo /etc/yum.repos.d/google-cloud-sdk.repo
-  append_final:
-    - RUN curl -sSL https://packages.cloud.google.com/yum/doc/yum-key.gpg | gpg --import 
-    - RUN curl -sSL https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg | gpg --import
-    # - RUN pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
-    - RUN microdnf install -y google-cloud-sdk && gcloud --version
-    - RUN ansible-galaxy collection install google.cloud
+    name: registry.redhat.io/ansible-automation-platform-24/ee-supported-rhel9:latest
 
 dependencies:
   ansible_core:
-    package_pip: ansible-core==2.14.4
+    package_pip: ansible_core==2.14.4
   ansible_runner:
     package_pip: ansible-runner==2.4.0
+  galaxy:
+    collections:
+      - name: ansible.utils
+      - name: community.general
+      - name: google.cloud
   python: requirements.txt
-  system: bindep.txt
+  system:
+    - ca-certificates
+    - dnf
+    - git
+    - gnupg
+    - openssh-clients
+    - sshpass
+    - unzip
+    - which
+additional_build_files:
+  - src: files/google-cloud.repo
+    dest: configs
+
+additional_build_steps:
+  prepend_base:
+    - COPY _build/configs/google-cloud.repo /etc/yum.repos.d/google-cloud.repo
+  append_final:
+    - RUN curl -sSL https://packages.cloud.google.com/yum/doc/yum-key.gpg | gpg --import 
+    - RUN curl -sSL https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg | gpg --import
+  #  - RUN pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+    - RUN microdnf install -y google-cloud-sdk && gcloud --version
+    - RUN ansible-galaxy collection install google.cloud
+
+options:
+  package_manager_path: /usr/bin/microdnf

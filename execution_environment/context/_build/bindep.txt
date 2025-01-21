@@ -1,8 +1,8 @@
-dnf [platform:rpm]
-curl
-gnupg
-openssh-clients [platform:rpm]
-git
-which
-unzip
 ca-certificates
+dnf
+git
+gnupg
+openssh-clients
+sshpass
+unzip
+which

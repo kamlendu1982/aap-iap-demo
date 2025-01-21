@@ -1,0 +1,49 @@
+---
+- name: Configure Dynamic Google Cloud Inventory in Automation Controller
+  hosts: localhost
+  tasks:
+    - name: Import Automation Controller collection
+      ansible.builtin.import_role:
+        name: ansible.tower
+
+    - name: Create Google Cloud Credential in Automation Controller
+      tower_credential:
+        name: "Google Cloud Credential"
+        description: "Credential for GCP dynamic inventory"
+        organization: "Default"  # Change if using a custom organization
+        kind: "Cloud"
+        inputs:
+          account_file: |
+            {{ lookup('file', '/path/to/your-service-account-key.json') }}
+        state: present
+      register: gcp_credential
+      tags:
+        - never
+
+    - name: Create Dynamic Inventory in Automation Controller
+      tower_inventory:
+        name: "gcloud_dynamic"
+        description: "Dynamic inventory for GCP instances"
+        organization: "Default"  # Change if using a custom organization
+        state: present
+      register: gcp_inventory
+
+    - name: Add Google Cloud Inventory Source
+      tower_inventory_source:
+        name: "gcloud_rhpc_inv"
+        description: "Inventory source for GCP instances"
+        inventory: "{{ gcp_inventory.id }}"
+        source: "gcp_compute"
+        source_vars: |
+          plugin: gcp_compute
+          projects:
+            - gcloud_rhpc_inv
+          filters:
+            - status = RUNNING
+          hostnames:
+            - name
+          compose:
+            ansible_host: networkInterfaces[0].accessConfigs[0].natIP
+        #credential: "{{ gcp_credential.id }}"
+        credential: gcloud_rhdp
+        state: present
